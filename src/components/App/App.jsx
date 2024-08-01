@@ -55,7 +55,6 @@ function App() {
         setError(true);
       } finally {
         setLoading(false);
-        setError(false);
       }
     }
     getPictures();
