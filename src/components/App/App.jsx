@@ -6,6 +6,7 @@ import { fetchPictures } from "../../articles-api";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import ImageModal from "../ImageModal/ImageModal";
 
 function App() {
   const [pictures, setPictures] = useState([]);
@@ -13,6 +14,9 @@ function App() {
   const [error, setError] = useState(false);
   const [page, setPage] = useState(1);
   const [topic, setTopic] = useState("");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleSearch = async (newTopic) => {
     setPictures([]);
@@ -22,6 +26,16 @@ function App() {
 
   const handleLoadMore = () => {
     setPage(page + 1);
+  };
+
+  const handleOpenModal = (item) => {
+    setSelectedImage(item);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
   };
 
   useEffect(() => {
@@ -48,15 +62,24 @@ function App() {
   }, [topic, page]);
 
   return (
-    <div className={css.galleryWrap}>
-      <SearchBar onSearch={handleSearch} />
-      {loading && <Loader />}
-      {error && <ErrorMessage />}
-      {pictures.length > 0 && <ImageGallery items={pictures} />}
-      {pictures.length > 0 && !loading && (
-        <LoadMoreBtn onClick={handleLoadMore} />
-      )}
-    </div>
+    <>
+      <div className={css.galleryWrap}>
+        <SearchBar onSearch={handleSearch} />
+        {loading && <Loader />}
+        {error && <ErrorMessage />}
+        {pictures.length > 0 && (
+          <ImageGallery items={pictures} onModalOpen={handleOpenModal} />
+        )}
+        {pictures.length > 0 && !loading && (
+          <LoadMoreBtn onClick={handleLoadMore} />
+        )}
+      </div>
+      <ImageModal
+        item={selectedImage}
+        isOpen={isModalOpen}
+        onRequestClose={handleCloseModal}
+      />
+    </>
   );
 }
 
